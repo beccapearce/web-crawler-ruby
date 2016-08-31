@@ -22,7 +22,8 @@ require 'json'
         str=link.href.to_s
         strList=str.split(%r{=|&})
         url=strList[1]
-        File.write('./urls.csv', url) unless url.include? "webcache"
+        @links.push(url) unless url.include? "webcache"
+        return @links
       end
     end
   end
