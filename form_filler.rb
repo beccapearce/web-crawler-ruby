@@ -1,19 +1,33 @@
 require 'rubygems'
 require 'mechanize'
+require 'json'
 
-agent = Mechanize.new
-page = agent.get('http://www.google.com/')
 
-google_form = page.form('f')
-google_form.q = 'sequelise'
+  def start_mechanize(url)
+    @agent = Mechanize.new
+    @page = @agent.get(url)
+  end
 
-page = agent.submit(google_form, google_form.buttons.first)
+  def search_skill(skill)
+    google_form = @page.form('f')
+    google_form.q = skill
 
-page.links.each do |link|
-    if link.href.to_s =~/url.q/
+    @page = @agent.submit(google_form, google_form.buttons.first)
+    get_links
+  end
+
+  def get_links
+    @page.links.each do |link|
+      if link.href.to_s =~/url.q/
         str=link.href.to_s
         strList=str.split(%r{=|&})
         url=strList[1]
-        puts url
+        File.write('./urls.csv', url) unless url.include? "webcache"
+      end
     end
-end
+  end
+
+
+
+start_mechanize('https://www.google.com/video')
+search_skill('orms')
